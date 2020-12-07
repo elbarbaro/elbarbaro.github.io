@@ -11,12 +11,38 @@
             height: 100vh;
             overflow: hidden;
         }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .points {
+            margin-top: 1rem;
+        }
+
+        .row {
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
-    <canvas id="myCanvas" width="600" height="600"></canvas>
+    <div class="container">
+        <div class="points" id="points">
+            <div class="row">
+                <input type="text" placeholder="Grado">
+                <input type="text" placeholder="Distancia" id="input-distance">
+                <button type="button" id="btn-add">Nuevo</button>
+                <button type="button" id="btn-copy">Copiar</button>
+                <button type="button" id="btn-draw">Gráficar</button>
+                <button type="button" id="btn-clean">Limpiar</button>
+            </div>
+        </div>
+        <canvas id="myCanvas" width="600" height="600"></canvas>
+    </div>
     <script>
-        var width = document.body.clientWidth;
+        var points = document.getElementById("points");
+        var width = document.body.clientWidth/2;
         var height = document.body.clientHeight;
         var radius = 200;
         var point_size = 2;
@@ -84,6 +110,110 @@
             }
         }
 
+        const addRowOnTabEvent = e => {
+            if(e.keyCode == 9) {
+                addNewRow();
+            }
+        } 
+
+        const addNewRow1 = values => {
+            var row = document.createElement("div");
+            var inputXY = document.createElement("input");
+            var inputDistance = document.createElement("input");
+
+            row.classList.add("row");
+
+            inputXY.type = "text";
+            inputXY.placeholder = "Grado";
+            inputXY.value = values[0];
+
+            inputDistance.type = "text";
+            inputDistance.placeholder = "Distancia";
+            inputDistance.value = values[1];
+
+            inputDistance.onkeydown = addRowOnTabEvent;
+
+            row.appendChild(inputXY);
+            row.appendChild(inputDistance);
+
+            points.appendChild(row);
+        }
+
+        const addNewRow = e => {
+            var row = document.createElement("div");
+            var inputXY = document.createElement("input");
+            var inputDistance = document.createElement("input");
+
+            row.classList.add("row");
+
+            inputXY.type = "text";
+            inputXY.placeholder = "Grado";
+
+            inputDistance.type = "text";
+            inputDistance.placeholder = "Distancia";
+
+            inputDistance.onkeydown = addRowOnTabEvent;
+
+            row.appendChild(inputXY);
+            row.appendChild(inputDistance);
+
+            points.appendChild(row);
+        }
+
+        const getPoints = () => {
+            let listPoints = [];
+            const rows = points.childElementCount | points.children.length;
+            for(let i = 0; i < rows; i++) {
+                let inputDegree = points.children[i].children[0];
+                let inputDistance = points.children[i].children[1];
+                let degree = new Number(inputDegree.value).valueOf();
+                let distance = new Number(inputDistance.value).valueOf();
+                listPoints.push({ degree: degree, distance: distance });
+            }
+
+            console.log("Points: ", listPoints);
+            return listPoints;
+        }
+
+        const drawingPoints = e => {
+            const listPoints = getPoints();
+            for(let i = 0; i < listPoints.length; i++) {
+                let degree = listPoints[i].degree;
+                let distance = listPoints[i].distance;
+                console.log("Degrees: ", degree);
+                console.log("Distance: ", distance);
+                drawPoint(degree, distance, ""+degree);
+            }
+        };
+
+        const eraseDraw = e => {
+            ctx.clearRect(0, 0, width, height);
+            drawCircle();
+        }
+
+        const copyClipBoard = e => {
+            navigator.clipboard.readText()
+            .then(text => parseClipBoardtext(text))
+            .catch(error => console.log(error));
+        }
+
+        const parseClipBoardtext = (text) => {
+            const lines = text.split('\n');
+            const length = lines.length;
+            if(length > 0) {
+                for(let i = 0; i < length; i++){
+                    addNewRow1(lines[i].split('	'))
+                }
+            }
+        }
+
+        document.getElementById("btn-add").onclick = addNewRow;
+        document.getElementById("btn-draw").onclick = drawingPoints;
+        document.getElementById("btn-clean").onclick = eraseDraw;
+        document.getElementById("btn-copy").onclick = copyClipBoard;
+        document.getElementById("input-distance").onkeydown = addRowOnTabEvent;
+
+
         //Execution
         drawCircle();
         /*drawPoint(0,1,"0");
@@ -102,7 +232,7 @@
         drawPoint(350,1,"350");
         drawPoint(150,1,"150");*/
 
-        createPoints(50);
+        //createPoints(50);
     </script>
 </body>
 </html>
