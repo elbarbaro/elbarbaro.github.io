@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Puntos en una circunferencia</title>
     <style>
         html, body {
             margin: 0;
@@ -21,8 +21,18 @@
             margin-top: 1rem;
         }
 
+        .draw {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .row {
             padding: 5px;
+        }
+
+        #btn-clean {
+            margin-top: 1rem;
         }
     </style>
 </head>
@@ -35,15 +45,17 @@
                 <button type="button" id="btn-add">Nuevo</button>
                 <button type="button" id="btn-copy">Copiar</button>
                 <button type="button" id="btn-draw">Gráficar</button>
-                <button type="button" id="btn-clean">Limpiar</button>
             </div>
         </div>
-        <canvas id="myCanvas" width="600" height="600"></canvas>
+        <div class="draw">
+            <button type="button" id="btn-clean">Limpiar</button>
+            <canvas id="myCanvas" width="600" height="600"></canvas>
+        </div>
     </div>
     <script>
         var points = document.getElementById("points");
         var width = document.body.clientWidth/2;
-        var height = document.body.clientHeight;
+        var height = document.body.clientHeight - 60;
         var radius = 200;
         var point_size = 2;
         var center_x = width / 2;
@@ -200,13 +212,16 @@
         const parseClipBoardtext = (text) => {
             const lines = text.split('\n');
             const length = lines.length;
+            let delimiter = '';
+            const isComma = lines[0].includes(',');
+            delimiter = isComma ? ',' : '	';
             if(length > 0) {
                 for(let i = 0; i < length; i++){
-                    addNewRow1(lines[i].split('	'))
+                    addNewRow1(lines[i].split(delimiter))
                 }
             }
         }
-
+        
         document.getElementById("btn-add").onclick = addNewRow;
         document.getElementById("btn-draw").onclick = drawingPoints;
         document.getElementById("btn-clean").onclick = eraseDraw;
