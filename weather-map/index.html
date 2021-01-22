@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #map {
+            height: 100%;
+        }
+
+        /* Optional: Makes the sample page fill the window. */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC1zCLbrFiVvtYwEwbbMTSkUw36k2cw3II&callback=initMap&libraries=&v=beta&map_ids=8e0a97af9386fef"
+      defer
+    ></script>
+    <script src="js/data.js"></script>
+    <script>
+        const weathers = {
+            sunny: 'img/Sol.png',
+            thunder: 'img/Relampagos.png',
+            cloudy: 'img/SolNubeGrande.png',
+            cloudySun: 'img/SolNubePeque.png'
+        }
+        let map;
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                mapId: '1cLOEriJYstP720AkCYuAkX2nT1e_Fr9B',
+                center: { lat: 20.82336494341189, lng: -103.2904956484375 },
+                zoom: 8,
+            });
+            /*const ctaLayer = new google.maps.KmlLayer({
+                url: 'assets/Poligonos.kml',
+                map: map,
+            })*/
+            putIcons(data)
+        }
+
+        function getWeather() {
+            fetch('https://api.ivonne-clima.com/weathers')
+            .then(res => {
+                return res.json()
+            })
+            .then(res => {
+                console.log(res)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        }
+
+        function putIcons(data) {
+            const results = data.results
+            for(let i = 0; i < results.length; i++) {
+                const zone = results[i]
+                new google.maps.Marker({
+                    position: zone.latLng,
+                    map,
+                    title: zone.name,
+                    icon: weathers[zone.weatherType]
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="map"></div>
+</body>
+</html>
